@@ -56,3 +56,10 @@ export const setChartInterval = action(
     interval,
   }),
 );
+
+export const setChartConnectionStatus = action(
+  'setChartConnectionStatus',
+  (
+    status: 'idle' | 'connecting' | 'live' | 'reconnecting' | 'disconnected',
+  ) => ({ status }),
+);

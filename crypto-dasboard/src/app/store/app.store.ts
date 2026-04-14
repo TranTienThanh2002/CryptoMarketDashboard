@@ -20,6 +20,7 @@ export interface AppStore {
     currentPage: number;
     pageSize: number;
     isChartModalOpen: boolean;
+    connectionStatus: 'connecting' | 'live' | 'reconnecting' | 'disconnected';
   };
   chart: {
     symbol: string | null;
@@ -28,6 +29,7 @@ export interface AppStore {
     isLoading: boolean;
     isStreaming: boolean;
     error: string | null;
+    connectionStatus: 'idle' | 'connecting' | 'live' | 'reconnecting' | 'disconnected';
   };
   settings: UserSettings;
 }
@@ -46,6 +48,7 @@ export const appStore = createStore<AppStore>("appStore", {
     currentPage: 1,
     pageSize: 10,
     isChartModalOpen: false,
+    connectionStatus: 'connecting'
   },
   chart: {
     symbol: null,
@@ -54,6 +57,7 @@ export const appStore = createStore<AppStore>("appStore", {
     isLoading: false,
     isStreaming: false,
     error: null,
+    connectionStatus: 'idle'
   },
   settings: {
     language: "en",

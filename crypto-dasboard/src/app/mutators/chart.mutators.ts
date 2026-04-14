@@ -1,5 +1,5 @@
-import { mutator } from 'satcheljs';
-import { appStore } from '../store/app.store';
+import { mutator } from "satcheljs";
+import { appStore } from "../store/app.store";
 import {
   loadChartData,
   loadChartDataSuccess,
@@ -9,8 +9,8 @@ import {
   connectChartStreamFailure,
   upsertCurrentCandle,
   setChartInterval,
-} from '../actions/chart.actions';
-
+} from "../actions/chart.actions";
+import { setChartConnectionStatus } from "../actions/chart.actions";
 const store = appStore();
 
 mutator(loadChartData, ({ symbol, interval }) => {
@@ -29,21 +29,25 @@ mutator(loadChartDataSuccess, ({ symbol, candles }) => {
 mutator(loadChartDataFailure, ({ error }) => {
   store.chart.isLoading = false;
   store.chart.error = error;
+  store.chart.connectionStatus = "disconnected";
 });
 
 mutator(connectChartStream, ({ symbol, interval }) => {
   store.chart.symbol = symbol;
   store.chart.interval = interval;
   store.chart.isStreaming = true;
+  store.chart.connectionStatus = "connecting";
 });
 
 mutator(connectChartStreamSuccess, () => {
   store.chart.isStreaming = true;
+  store.chart.connectionStatus = "live";
 });
 
 mutator(connectChartStreamFailure, ({ error }) => {
   store.chart.isStreaming = false;
   store.chart.error = error;
+  store.chart.connectionStatus = "disconnected";
 });
 
 mutator(upsertCurrentCandle, ({ candle }) => {
@@ -52,6 +56,10 @@ mutator(upsertCurrentCandle, ({ candle }) => {
 
   if (!lastCandle) {
     store.chart.candles = [candle];
+    return;
+  }
+
+  if (candle.time < lastCandle.time) {
     return;
   }
 
@@ -66,4 +74,8 @@ mutator(upsertCurrentCandle, ({ candle }) => {
 
 mutator(setChartInterval, ({ interval }) => {
   store.chart.interval = interval;
+});
+
+mutator(setChartConnectionStatus, ({ status }) => {
+  store.chart.connectionStatus = status;
 });

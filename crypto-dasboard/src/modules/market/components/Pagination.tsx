@@ -14,28 +14,30 @@ export const Pagination = ({
   if (totalPages <= 1) return null;
 
   return (
-    <div className="mt-4 flex items-center justify-end gap-2">
-      <button
-        type="button"
-        disabled={currentPage === 1}
-        onClick={() => onChange(currentPage - 1)}
-        className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-300 disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        {t('prev')}
-      </button>
+    <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+      <div className="text-sm text-slate-300">
+        {t('page')} {currentPage} / {totalPages}
+      </div>
 
-      <span className="text-sm text-slate-300">
-        {currentPage} / {totalPages}
-      </span>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          disabled={currentPage === 1}
+          onClick={() => onChange(currentPage - 1)}
+          className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-300 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {t('prev')}
+        </button>
 
-      <button
-        type="button"
-        disabled={currentPage === totalPages}
-        onClick={() => onChange(currentPage + 1)}
-        className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-300 disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        {t('next')}
-      </button>
+        <button
+          type="button"
+          disabled={currentPage === totalPages}
+          onClick={() => onChange(currentPage + 1)}
+          className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-300 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {t('next')}
+        </button>
+      </div>
     </div>
   );
 };

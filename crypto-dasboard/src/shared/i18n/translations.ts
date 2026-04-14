@@ -28,6 +28,9 @@ export const translations = {
     next: "Next",
     close: "Close",
     chart: "Chart",
+    page: "Page",
+    tryDifferentSearch: "Try a different search keyword.",
+    tryAddFavorites: "Try adding trading pairs to your favorites.",
   },
   vi: {
     appTitle: "Bảng Điều Khiển Crypto",
@@ -58,6 +61,9 @@ export const translations = {
     next: "Sau",
     close: "Đóng",
     chart: "Biểu đồ",
+    page: "Trang",
+    tryDifferentSearch: "Thử từ khóa tìm kiếm khác.",
+    tryAddFavorites: "Hãy thêm cặp giao dịch vào mục yêu thích.",
   },
 } as const;
 

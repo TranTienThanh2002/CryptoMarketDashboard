@@ -63,3 +63,10 @@ export const openChartModal = action("openChartModal", (symbol: string) => ({
 }));
 
 export const closeChartModal = action("closeChartModal");
+
+export const setMarketConnectionStatus = action(
+  'setMarketConnectionStatus',
+  (
+    status: 'connecting' | 'live' | 'reconnecting' | 'disconnected',
+  ) => ({ status }),
+);

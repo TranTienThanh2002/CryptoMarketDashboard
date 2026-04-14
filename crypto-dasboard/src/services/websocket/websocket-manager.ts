@@ -2,6 +2,7 @@ type MessageHandler<T> = (payload: T) => void;
 type ErrorHandler = (event: Event) => void;
 type OpenHandler = () => void;
 type CloseHandler = (event: CloseEvent) => void;
+type ReconnectHandler = (attempt: number) => void;
 
 export class WebSocketManager<T> {
   private socket: WebSocket | null = null;
@@ -15,6 +16,7 @@ export class WebSocketManager<T> {
     private readonly onOpen?: OpenHandler,
     private readonly onError?: ErrorHandler,
     private readonly onClose?: CloseHandler,
+    private readonly onReconnect?: ReconnectHandler,
   ) {}
 
   connect(): void {
@@ -50,7 +52,7 @@ export class WebSocketManager<T> {
   }
 
   disconnect(): void {
-    this.isManualClose = true;
+    // this.isManualClose = true;
 
     if (this.reconnectTimer) {
       window.clearTimeout(this.reconnectTimer);
@@ -61,8 +63,11 @@ export class WebSocketManager<T> {
   }
 
   private scheduleReconnect(): void {
+    const attempt = this.reconnectAttempts + 1;
     const delay = Math.min(1000 * 2 ** this.reconnectAttempts, 10000);
     this.reconnectAttempts += 1;
+
+    this.onReconnect?.(attempt);
 
     this.reconnectTimer = window.setTimeout(() => {
       this.connect();

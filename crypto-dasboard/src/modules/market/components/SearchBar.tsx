@@ -7,7 +7,7 @@ export const SearchBar = observer(() => {
   const store = appStore();
 
   return (
-    <div className="mb-6">
+    <div>
       <input
         value={store.market.searchKeyword}
         onChange={(event) => {

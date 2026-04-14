@@ -10,10 +10,10 @@ export const ChartModal = observer(() => {
   if (!store.market.isChartModalOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="relative max-h-[90vh] w-full max-w-6xl overflow-auto rounded-3xl border border-white/10 bg-[#0f172a] p-6 shadow-2xl">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-white">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 sm:items-center sm:p-4">
+      <div className="relative h-[92vh] w-full overflow-auto rounded-t-3xl border border-white/10 bg-[#0f172a] p-4 shadow-2xl sm:h-auto sm:max-h-[90vh] sm:max-w-6xl sm:rounded-3xl sm:p-6">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h3 className="truncate text-base font-semibold text-white sm:text-lg">
             {store.market.selectedSymbol} {t('chart')}
           </h3>
 

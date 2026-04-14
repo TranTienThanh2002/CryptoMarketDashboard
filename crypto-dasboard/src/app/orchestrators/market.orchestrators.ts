@@ -8,6 +8,7 @@ import {
   connectMiniTickerStream,
   connectMiniTickerStreamFailure,
   connectMiniTickerStreamSuccess,
+  disconnectMiniTickerStream,
   loadTradingPairs,
   loadTradingPairsFailure,
   loadTradingPairsSuccess,
@@ -15,7 +16,7 @@ import {
 } from "../actions/market.actions";
 import { getExchangeInfo } from "../../services/api/binance.api";
 import { BINANCE_WS_BASE_URL } from "../../shared/constants/api";
-
+import { setMarketConnectionStatus } from "../actions/market.actions";
 let marketSocket: WebSocketManager<BinanceMiniTickerStreamItem[]> | null = null;
 let flushTimer: number | null = null;
 const tickerBuffer = new Map<string, MarketTicker>();
@@ -83,11 +84,27 @@ orchestrator(connectMiniTickerStream, () => {
     },
     () => {
       connectMiniTickerStreamSuccess();
+      setMarketConnectionStatus("live");
     },
     () => {
-      connectMiniTickerStreamFailure("WebSocket connection error");
+      console.warn("MiniTicker websocket error");
+    },
+    (event) => {
+      console.warn("MiniTicker websocket closed", event.code, event.reason);
+
+      if (event.code !== 1000) {
+        setMarketConnectionStatus("disconnected");
+      }
+    },
+    () => {
+      setMarketConnectionStatus("reconnecting");
     },
   );
 
   marketSocket.connect();
+});
+orchestrator(disconnectMiniTickerStream, () => {
+  marketSocket?.disconnect();
+  marketSocket = null;
+  setMarketConnectionStatus('disconnected');
 });

@@ -13,7 +13,7 @@ import { getKlines } from "../../services/api/binance.api";
 import { WebSocketManager } from "../../services/websocket/websocket-manager";
 import { BINANCE_WS_BASE_URL } from "../../shared/constants/api";
 import type { BinanceKlineWsPayload } from "../../shared/types/chart.types";
-
+import { setChartConnectionStatus } from "../actions/chart.actions";
 let chartSocket: WebSocketManager<BinanceKlineWsPayload> | null = null;
 
 orchestrator(loadChartData, async ({ symbol, interval }) => {
@@ -46,13 +46,21 @@ orchestrator(connectChartStream, ({ symbol, interval }) => {
     },
     () => {
       connectChartStreamSuccess();
+      setChartConnectionStatus("live");
     },
     () => {
       console.warn("Chart websocket error");
     },
     (event) => {
       console.warn("Chart websocket closed", event.code, event.reason);
-      connectChartStreamFailure(`Chart websocket closed: ${event.code}`);
+
+      if (event.code !== 1000) {
+        setChartConnectionStatus("disconnected");
+      }
+    },
+    (attempt) => {
+      console.log("chart ws reconnect attempt", attempt);
+      setChartConnectionStatus("reconnecting");
     },
   );
 
@@ -62,4 +70,5 @@ orchestrator(connectChartStream, ({ symbol, interval }) => {
 orchestrator(disconnectChartStream, () => {
   chartSocket?.disconnect();
   chartSocket = null;
+  setChartConnectionStatus("idle");
 });
