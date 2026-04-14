@@ -1,0 +1,5 @@
+export const BINANCE_REST_BASE_URL = process.env.BINANCE_REST_BASE_URL;
+export const BINANCE_WS_BASE_URL = process.env.BINANCE_WS_BASE_URL;
+
+export const DEFAULT_KLINE_INTERVAL = process.env.DEFAULT_KLINE_INTERVAL;
+export const DEFAULT_MARKET_LIMIT = process.env.DEFAULT_MARKET_LIMIT;
