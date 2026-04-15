@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo } from "react";
 import type { TradingPair } from "../../../shared/types/market.types";
 import { appStore } from "../../../app/store/app.store";
 import { observer } from "mobx-react-lite";
@@ -19,12 +19,14 @@ export const MarketRow = memo(
     const ticker = store.market.tickers[pair.symbol];
     const isFavorite = store.market.favorites.includes(pair.symbol);
 
-    const highlightClass = useMemo(() => {
-      if (!ticker) return "bg-white/0";
-      if (ticker.lastDirection === "up") return "bg-emerald-500/10";
-      if (ticker.lastDirection === "down") return "bg-red-500/10";
-      return "bg-white/0";
-    }, [ticker]);
+    const highlightClass =
+      !ticker
+        ? "bg-white/0"
+        : ticker.lastDirection === "up"
+          ? "bg-emerald-500/10"
+          : ticker.lastDirection === "down"
+            ? "bg-red-500/10"
+            : "bg-white/0";
 
     const percentClass =
       !ticker || ticker.priceChangePercent24h === 0
@@ -96,9 +98,7 @@ export const MarketRow = memo(
             {ticker ? formatPrice(ticker.currentPrice) : "--"}
           </div>
 
-          <div
-            className={`hidden text-right font-medium md:block ${percentClass}`}
-          >
+          <div className={`hidden text-right font-medium md:block ${percentClass}`}>
             {ticker ? formatPercent(ticker.priceChangePercent24h) : "--"}
           </div>
         </div>
