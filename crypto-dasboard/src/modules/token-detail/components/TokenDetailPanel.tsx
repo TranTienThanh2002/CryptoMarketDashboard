@@ -5,6 +5,7 @@ import {
   connectChartStream,
   disconnectChartStream,
   loadChartData,
+  resetChartState,
   setChartInterval,
 } from "../../../app/actions/chart.actions";
 import { CandlestickChart } from "./CandlestickChart";
@@ -26,9 +27,14 @@ export const TokenDetailPanel = observer(() => {
   useEffect(() => {
     if (!selectedSymbol) return;
 
+    disconnectChartStream();
+    disconnectTradesStream();
+    resetChartState();
+
     loadChartData(selectedSymbol, interval);
     connectChartStream(selectedSymbol, interval);
     connectTradesStream(selectedSymbol);
+
     return () => {
       disconnectChartStream();
       disconnectTradesStream();

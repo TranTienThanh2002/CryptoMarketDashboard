@@ -14,6 +14,7 @@ import {
   connectTradesStreamFailure,
   prependRecentTrade,
   clearRecentTrades,
+  resetChartState,
 } from "../actions/chart.actions";
 import { setChartConnectionStatus } from "../actions/chart.actions";
 const store = appStore();
@@ -100,12 +101,28 @@ mutator(connectTradesStreamFailure, ({ error }) => {
 });
 
 mutator(prependRecentTrade, ({ trade }) => {
-  const nextTrades = [trade, ...store.chart.trades].slice(0, 40);
-  store.chart.trades = nextTrades;
+  const exists = store.chart.trades.some(
+    (item) =>
+      item.id === trade.id &&
+      item.timestamp === trade.timestamp &&
+      item.price === trade.price,
+  );
+
+  if (exists) return;
+
+  store.chart.trades = [trade, ...store.chart.trades].slice(0, 40);
 });
 
 mutator(clearRecentTrades, () => {
   store.chart.trades = [];
   store.chart.tradeError = null;
+  store.chart.isLoadingTrades = false;
+});
+mutator(resetChartState, () => {
+  store.chart.candles = [];
+  store.chart.trades = [];
+  store.chart.error = null;
+  store.chart.tradeError = null;
+  store.chart.isLoading = false;
   store.chart.isLoadingTrades = false;
 });

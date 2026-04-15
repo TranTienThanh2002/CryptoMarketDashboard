@@ -16,20 +16,28 @@ import { setChartConnectionStatus } from "../actions/chart.actions";
 import {
   clearRecentTrades,
   connectTradesStream,
-  connectTradesStreamFailure,
   connectTradesStreamSuccess,
   disconnectTradesStream,
   prependRecentTrade,
 } from "../actions/chart.actions";
 import type { BinanceTradeWsPayload } from "../../shared/types/trade.types";
+import { appStore } from "../store/app.store";
 let chartSocket: WebSocketManager<BinanceKlineWsPayload> | null = null;
 let tradeSocket: WebSocketManager<BinanceTradeWsPayload> | null = null;
+let activeChartRequestKey = "";
 orchestrator(loadChartData, async ({ symbol, interval }) => {
+  const requestKey = `${symbol}_${interval}_${Date.now()}`;
+  activeChartRequestKey = requestKey;
   try {
     const candles = await getKlines(symbol, interval);
+    if (activeChartRequestKey !== requestKey) {
+      return;
+    }
     loadChartDataSuccess(symbol, candles);
   } catch (error) {
-    console.error("loadChartData error:", error);
+    if (activeChartRequestKey !== requestKey) {
+      return;
+    }
     const message =
       error instanceof Error ? error.message : "Failed to load chart data";
     loadChartDataFailure(message);
@@ -43,6 +51,7 @@ orchestrator(connectChartStream, ({ symbol, interval }) => {
     `${BINANCE_WS_BASE_URL}/${symbol.toLowerCase()}@kline_${interval}`,
     (payload) => {
       if (!payload?.k) return;
+      if (payload.k.s !== appStore().market.selectedSymbol) return;
 
       upsertCurrentCandle({
         time: Math.floor(payload.k.t / 1000),
@@ -87,6 +96,7 @@ orchestrator(connectTradesStream, ({ symbol }) => {
   tradeSocket = new WebSocketManager<BinanceTradeWsPayload>(
     `${BINANCE_WS_BASE_URL}/${symbol.toLowerCase()}@trade`,
     (payload) => {
+      if (payload.s !== appStore().market.selectedSymbol) return;
       prependRecentTrade({
         id: payload.t,
         price: Number(payload.p),

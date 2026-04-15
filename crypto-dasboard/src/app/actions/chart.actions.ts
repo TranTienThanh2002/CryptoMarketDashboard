@@ -64,14 +64,14 @@ export const setChartConnectionStatus = action(
     status: "idle" | "connecting" | "live" | "reconnecting" | "disconnected",
   ) => ({ status }),
 );
-
+export const resetChartState = action("resetChartState");
 export const connectTradesStream = action(
   "connectTradesStream",
   (symbol: string) => ({ symbol }),
 );
 
 export const connectTradesStreamSuccess = action("connectTradesStreamSuccess");
-  
+
 export const connectTradesStreamFailure = action(
   "connectTradesStreamFailure",
   (error: string) => ({ error }),

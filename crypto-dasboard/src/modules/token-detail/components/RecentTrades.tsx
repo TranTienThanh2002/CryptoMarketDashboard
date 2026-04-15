@@ -52,7 +52,7 @@ export const RecentTrades = observer(() => {
 
             return (
               <div
-                key={trade.id}
+                key={`${trade.id}-${trade.timestamp}-${trade.price}-${trade.quantity}`}
                 className="grid grid-cols-3 gap-3 border-t border-white/5 py-2 text-sm"
               >
                 <div className={sideClass}>{formatPrice(trade.price)}</div>
