@@ -2,7 +2,7 @@ import { t } from "../../../shared/i18n";
 
 export const MarketListSkeleton = () => {
   return (
-    <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5">
+    <div className="overflow-hidden rounded-3xl border border-[var(--border)] bg-white/5">
       <div className="grid grid-cols-[40px_1.2fr_1fr_1fr] gap-4 px-4 py-4 text-xs font-semibold uppercase tracking-wide text-slate-400">
         <div></div>
         <div>{t('symbol')}</div>

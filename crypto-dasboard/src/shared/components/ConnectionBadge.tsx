@@ -5,7 +5,7 @@ interface ConnectionBadgeProps {
 const statusMap = {
   idle: {
     label: 'Idle',
-    className: 'border-white/10 bg-white/5 text-slate-300',
+    className: 'border-[var(--border)] bg-white/5 text-[var(--foreground)]',
   },
   connecting: {
     label: 'Connecting',

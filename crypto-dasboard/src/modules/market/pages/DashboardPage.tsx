@@ -13,6 +13,7 @@ import { MarketTabs } from "../components/MarketTabs";
 import { ChartModal } from "../../token-detail/components/ChartModal";
 import { t } from "../../../shared/i18n";
 import { ConnectionBadge } from "../../../shared/components/ConnectionBadge";
+import { ThemeToggle } from "../../settings/components/ThemeToggle";
 export const DashboardPage = observer(() => {
   const store = appStore();
 
@@ -27,27 +28,30 @@ export const DashboardPage = observer(() => {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-sky-500/10 to-emerald-500/10 p-6">
+      <div className="rounded-3xl border border-[var(--border)] bg-gradient-to-r from-sky-500/10 to-emerald-500/10 p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-white">
+            <h2 className="text-2xl font-bold text-[var(--foreground)]">
               {t("dashboardTitle")}
             </h2>
-            <p className="mt-2 text-sm text-slate-300">
+            <p className="mt-2 text-sm text-[var(--muted)]">
               {t("dashboardSubtitle")}
             </p>
           </div>
 
-          <LanguageSwitcher />
+          <div className="flex flex-col gap-3">
+            <LanguageSwitcher />
+            <ThemeToggle />
+          </div>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-300">
-          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-[var(--foreground)]">
+          <span className="rounded-full border border-[var(--border)] bg-white/5 px-3 py-1">
             {t("pairs")}: {store.market.pairs.length}
           </span>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-300">{t("stream")}:</span>
+            <span className="text-xs text-[var(--foreground)]">{t("stream")}:</span>
             <ConnectionBadge status={store.market.connectionStatus} />
           </div>
 

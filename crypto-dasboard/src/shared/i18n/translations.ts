@@ -31,6 +31,9 @@ export const translations = {
     page: "Page",
     tryDifferentSearch: "Try a different search keyword.",
     tryAddFavorites: "Try adding trading pairs to your favorites.",
+    theme: "Theme",
+    dark: "Dark",
+    light: "Light",
   },
   vi: {
     appTitle: "Bảng Điều Khiển Crypto",
@@ -64,6 +67,9 @@ export const translations = {
     page: "Trang",
     tryDifferentSearch: "Thử từ khóa tìm kiếm khác.",
     tryAddFavorites: "Hãy thêm cặp giao dịch vào mục yêu thích.",
+    theme: "Giao diện",
+    dark: "Tối",
+    light: "Sáng",
   },
 } as const;
 

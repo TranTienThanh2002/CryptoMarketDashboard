@@ -19,3 +19,8 @@ export const hydrateLanguage = action(
   'hydrateLanguage',
   (language: Language) => ({ language }),
 );
+
+export const hydrateTheme = action(
+  'hydrateTheme',
+  (theme: ThemeMode) => ({ theme }),
+);

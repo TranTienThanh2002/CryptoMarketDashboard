@@ -31,17 +31,17 @@ export const TokenDetailPanel = observer(() => {
 
   if (!selectedSymbol) {
     return (
-      <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-sm text-slate-300">
+      <div className="rounded-3xl border border-[var(--border)] bg-white/5 p-6 text-sm text-[var(--foreground)]">
         {t("selectPairForChart")}
       </div>
     );
   }
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <div className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h3 className="text-xl font-bold text-white">{selectedSymbol}</h3>
+          <h3 className="text-xl font-bold text-[var(--foreground)]">{selectedSymbol}</h3>
           <p className="mt-1 text-sm text-slate-400">
             {t("realTimeCandlestickChart")}
           </p>
@@ -58,7 +58,7 @@ export const TokenDetailPanel = observer(() => {
               className={`rounded-full px-3 py-1.5 text-sm transition ${
                 interval === item
                   ? "bg-sky-500 text-white"
-                  : "border border-white/10 bg-white/5 text-slate-300"
+                  : "border border-[var(--border)] bg-white/5 text-[var(--foreground)]"
               }`}
             >
               {item}
@@ -68,7 +68,7 @@ export const TokenDetailPanel = observer(() => {
       </div>
 
       {isLoading ? (
-        <div className="rounded-2xl border border-white/10 bg-[#121a2b] px-4 py-16 text-center text-sm text-slate-300">
+        <div className="rounded-2xl border border-[var(--border)] bg-[#121a2b] px-4 py-16 text-center text-sm text-[var(--foreground)]">
           {t("loadingChartData")}
         </div>
       ) : candles.length === 0 ? (

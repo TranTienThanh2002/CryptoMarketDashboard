@@ -28,7 +28,7 @@ export const MarketRow = memo(
 
     const percentClass =
       !ticker || ticker.priceChangePercent24h === 0
-        ? "text-slate-300"
+        ? "text-[var(--foreground)]"
         : ticker.priceChangePercent24h > 0
           ? "text-emerald-400"
           : "text-red-400";
@@ -59,14 +59,14 @@ export const MarketRow = memo(
             className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm transition md:mt-0 ${
               isFavorite
                 ? "border-yellow-400/30 bg-yellow-400/10 text-yellow-300"
-                : "border-white/10 bg-white/5 text-slate-400 hover:text-yellow-300"
+                : "border-[var(--border)] bg-white/5 text-slate-400 hover:text-yellow-300"
             }`}
           >
             ★
           </button>
 
           <div className="min-w-0 flex-1">
-            <div className="font-semibold text-white">{pair.symbol}</div>
+            <div className="font-semibold text-[var(--foreground)]">{pair.symbol}</div>
             <div className="text-xs text-slate-400">
               {pair.baseAsset} / {pair.quoteAsset}
             </div>
@@ -76,7 +76,7 @@ export const MarketRow = memo(
                 <div className="text-[11px] uppercase tracking-wide text-slate-500">
                   {t("price")}
                 </div>
-                <div className="mt-1 text-sm font-medium text-white">
+                <div className="mt-1 text-sm font-medium text-[var(--foreground)]">
                   {ticker ? formatPrice(ticker.currentPrice) : "--"}
                 </div>
               </div>
@@ -92,7 +92,7 @@ export const MarketRow = memo(
             </div>
           </div>
 
-          <div className="hidden text-right font-medium text-white md:block">
+          <div className="hidden text-right font-medium text-[var(--foreground)] md:block">
             {ticker ? formatPrice(ticker.currentPrice) : "--"}
           </div>
 

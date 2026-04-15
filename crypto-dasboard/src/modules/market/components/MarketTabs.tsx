@@ -1,7 +1,7 @@
-import { observer } from 'mobx-react-lite';
-import { appStore } from '../../../app/store/app.store';
-import { setActiveMarketTab } from '../../../app/actions/market.actions';
-import { t } from '../../../shared/i18n';
+import { observer } from "mobx-react-lite";
+import { appStore } from "../../../app/store/app.store";
+import { setActiveMarketTab } from "../../../app/actions/market.actions";
+import { t } from "../../../shared/i18n";
 
 export const MarketTabs = observer(() => {
   const store = appStore();
@@ -11,26 +11,26 @@ export const MarketTabs = observer(() => {
     <div className="flex items-center gap-2">
       <button
         type="button"
-        onClick={() => setActiveMarketTab('all')}
+        onClick={() => setActiveMarketTab("all")}
         className={`rounded-full px-4 py-2 text-sm transition ${
-          activeTab === 'all'
-            ? 'bg-sky-500 text-white'
-            : 'border border-white/10 bg-white/5 text-slate-300'
+          activeTab === "all"
+            ? "bg-sky-500 text-white"
+            : "border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)]"
         }`}
       >
-        {t('all')}
+        {t("all")}
       </button>
 
       <button
         type="button"
-        onClick={() => setActiveMarketTab('favorites')}
+        onClick={() => setActiveMarketTab("favorites")}
         className={`rounded-full px-4 py-2 text-sm transition ${
-          activeTab === 'favorites'
-            ? 'bg-sky-500 text-white'
-            : 'border border-white/10 bg-white/5 text-slate-300'
+          activeTab === "favorites"
+            ? "bg-sky-500 text-white"
+            : "border border-[var(--border)] bg-white/5 text-[var(--foreground)]"
         }`}
       >
-        {t('favorites')} ({favorites.length})
+        {t("favorites")} ({favorites.length})
       </button>
     </div>
   );
