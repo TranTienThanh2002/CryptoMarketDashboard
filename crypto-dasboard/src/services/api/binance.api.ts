@@ -1,12 +1,19 @@
-import type { BinanceKlineRestItem, CandleItem } from '../../shared/types/chart.types';
-import type { BinanceExchangeInfoResponse, TradingPair } from '../../shared/types/market.types';
-import { http } from './http';
+import type {
+  BinanceKlineRestItem,
+  CandleItem,
+} from "../../shared/types/chart.types";
+import type {
+  BinanceExchangeInfoResponse,
+  TradingPair,
+} from "../../shared/types/market.types";
+import type { OrderBookState } from "../../shared/types/orderbook.types";
+import { http } from "./http";
 
 export const getExchangeInfo = async (): Promise<TradingPair[]> => {
-  const response = await http.get<BinanceExchangeInfoResponse>('/exchangeInfo');
+  const response = await http.get<BinanceExchangeInfoResponse>("/exchangeInfo");
 
   return response.data.symbols
-    ?.filter((item) => item.status === 'TRADING' && item.quoteAsset === 'USDT')
+    ?.filter((item) => item.status === "TRADING" && item.quoteAsset === "USDT")
     .map((item) => ({
       symbol: item.symbol,
       baseAsset: item.baseAsset,
@@ -19,7 +26,7 @@ export const getKlines = async (
   interval: string,
   limit = 120,
 ): Promise<CandleItem[]> => {
-  const response = await http.get<BinanceKlineRestItem[]>('/klines', {
+  const response = await http.get<BinanceKlineRestItem[]>("/klines", {
     params: {
       symbol,
       interval,
@@ -34,4 +41,31 @@ export const getKlines = async (
     low: Number(item[3]),
     close: Number(item[4]),
   }));
+};
+
+export const getOrderBook = async (
+  symbol: string,
+  limit = 10,
+): Promise<OrderBookState> => {
+  const response = await http.get("/depth", {
+    params: {
+      symbol,
+      limit,
+    },
+  });
+
+  return {
+    bids: (response.data.bids ?? []).map(
+      ([price, quantity]: [string, string]) => ({
+        price: Number(price),
+        quantity: Number(quantity),
+      }),
+    ),
+    asks: (response.data.asks ?? []).map(
+      ([price, quantity]: [string, string]) => ({
+        price: Number(price),
+        quantity: Number(quantity),
+      }),
+    ),
+  };
 };

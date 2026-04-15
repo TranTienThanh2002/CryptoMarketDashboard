@@ -3,8 +3,11 @@ import { appStore } from "../../../app/store/app.store";
 import { useEffect } from "react";
 import {
   connectChartStream,
+  connectOrderBookStream,
   disconnectChartStream,
+  disconnectOrderBookStream,
   loadChartData,
+  loadOrderBook,
   resetChartState,
   setChartInterval,
 } from "../../../app/actions/chart.actions";
@@ -17,27 +20,28 @@ import {
   connectTradesStream,
   disconnectTradesStream,
 } from "../../../app/actions/chart.actions";
+import { OrderBook } from "./OrderBook";
 const intervals = ["1m", "5m", "15m", "1h", "4h"];
 
 export const TokenDetailPanel = observer(() => {
   const store = appStore();
   const selectedSymbol = store.market.selectedSymbol;
   const { candles, interval, isLoading, error } = store.chart;
-
   useEffect(() => {
     if (!selectedSymbol) return;
-
     disconnectChartStream();
     disconnectTradesStream();
+    disconnectOrderBookStream();
     resetChartState();
-
     loadChartData(selectedSymbol, interval);
     connectChartStream(selectedSymbol, interval);
     connectTradesStream(selectedSymbol);
-
+    loadOrderBook(selectedSymbol);
+    connectOrderBookStream(selectedSymbol);
     return () => {
       disconnectChartStream();
       disconnectTradesStream();
+      disconnectOrderBookStream();
     };
   }, [selectedSymbol, interval]);
 
@@ -91,16 +95,31 @@ export const TokenDetailPanel = observer(() => {
           description="Please try another interval or token."
         />
       ) : (
-        <div className="grid gap-4 xl:grid-cols-[1.6fr_0.9fr]">
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-2)] p-3">
-            <CandlestickChart
-              candles={candles}
-              symbol={selectedSymbol}
-              interval={interval}
-            />
+        <div className="grid gap-4 xl:grid-cols-[1.7fr_1fr]">
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-2)] p-3">
+              {isLoading ? (
+                <div className="px-4 py-16 text-center text-sm text-[var(--muted)]">
+                  {t("loadingChartData")}
+                </div>
+              ) : candles.length === 0 ? (
+                <EmptyState
+                  title={t("noChartData")}
+                  description="Please try another interval or token."
+                />
+              ) : (
+                <CandlestickChart
+                  candles={candles}
+                  symbol={selectedSymbol}
+                  interval={interval}
+                />
+              )}
+            </div>
+
+            <RecentTrades />
           </div>
 
-          <RecentTrades />
+          <OrderBook />
         </div>
       )}
     </div>

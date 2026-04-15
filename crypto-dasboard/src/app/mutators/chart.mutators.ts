@@ -15,6 +15,15 @@ import {
   prependRecentTrade,
   clearRecentTrades,
   resetChartState,
+  loadOrderBook,
+  loadOrderBookSuccess,
+  loadOrderBookFailure,
+  connectOrderBookStream,
+  connectOrderBookStreamSuccess,
+  connectOrderBookStreamFailure,
+  setOrderBookConnectionStatus,
+  patchOrderBook,
+  clearOrderBook,
 } from "../actions/chart.actions";
 import { setChartConnectionStatus } from "../actions/chart.actions";
 const store = appStore();
@@ -125,4 +134,59 @@ mutator(resetChartState, () => {
   store.chart.tradeError = null;
   store.chart.isLoading = false;
   store.chart.isLoadingTrades = false;
+  store.chart.orderBook = {
+    bids: [],
+    asks: [],
+    isLoading: false,
+    error: null,
+    connectionStatus: "idle",
+  };
+});
+
+mutator(loadOrderBook, () => {
+  store.chart.orderBook.isLoading = true;
+  store.chart.orderBook.error = null;
+  store.chart.orderBook.connectionStatus = "connecting";
+});
+
+mutator(loadOrderBookSuccess, ({ payload }) => {
+  store.chart.orderBook.bids = payload.bids;
+  store.chart.orderBook.asks = payload.asks;
+  store.chart.orderBook.isLoading = false;
+});
+
+mutator(loadOrderBookFailure, ({ error }) => {
+  store.chart.orderBook.isLoading = false;
+  store.chart.orderBook.error = error;
+  store.chart.orderBook.connectionStatus = "disconnected";
+});
+
+mutator(connectOrderBookStream, () => {
+  store.chart.orderBook.connectionStatus = "connecting";
+});
+
+mutator(connectOrderBookStreamSuccess, () => {
+  store.chart.orderBook.connectionStatus = "live";
+});
+
+mutator(connectOrderBookStreamFailure, ({ error }) => {
+  store.chart.orderBook.error = error;
+  store.chart.orderBook.connectionStatus = "disconnected";
+});
+
+mutator(setOrderBookConnectionStatus, ({ status }) => {
+  store.chart.orderBook.connectionStatus = status;
+});
+
+mutator(patchOrderBook, ({ payload }) => {
+  store.chart.orderBook.bids = payload.bids;
+  store.chart.orderBook.asks = payload.asks;
+});
+
+mutator(clearOrderBook, () => {
+  store.chart.orderBook.bids = [];
+  store.chart.orderBook.asks = [];
+  store.chart.orderBook.isLoading = false;
+  store.chart.orderBook.error = null;
+  store.chart.orderBook.connectionStatus = "idle";
 });

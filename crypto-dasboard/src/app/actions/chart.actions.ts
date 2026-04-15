@@ -1,6 +1,7 @@
 import { action } from "satcheljs";
 import type { CandleItem } from "../../shared/types/chart.types";
 import type { RecentTradeItem } from "../../shared/types/trade.types";
+import type { OrderBookLevel, OrderBookState } from "../../shared/types/orderbook.types";
 
 export const loadChartData = action(
   "loadChartData",
@@ -85,3 +86,49 @@ export const prependRecentTrade = action(
 );
 
 export const clearRecentTrades = action("clearRecentTrades");
+
+export const loadOrderBook = action("loadOrderBook", (symbol: string) => ({
+  symbol,
+}));
+
+export const loadOrderBookSuccess = action(
+  "loadOrderBookSuccess",
+  (payload: OrderBookState) => ({ payload }),
+);
+
+export const loadOrderBookFailure = action(
+  "loadOrderBookFailure",
+  (error: string) => ({ error }),
+);
+
+export const connectOrderBookStream = action(
+  "connectOrderBookStream",
+  (symbol: string) => ({ symbol }),
+);
+
+export const connectOrderBookStreamSuccess = action(
+  "connectOrderBookStreamSuccess",
+);
+
+export const connectOrderBookStreamFailure = action(
+  "connectOrderBookStreamFailure",
+  (error: string) => ({ error }),
+);
+
+export const disconnectOrderBookStream = action("disconnectOrderBookStream");
+
+export const setOrderBookConnectionStatus = action(
+  "setOrderBookConnectionStatus",
+  (
+    status: "idle" | "connecting" | "live" | "reconnecting" | "disconnected",
+  ) => ({ status }),
+);
+
+export const patchOrderBook = action(
+  "patchOrderBook",
+  (payload: { bids: OrderBookLevel[]; asks: OrderBookLevel[] }) => ({
+    payload,
+  }),
+);
+
+export const clearOrderBook = action("clearOrderBook");

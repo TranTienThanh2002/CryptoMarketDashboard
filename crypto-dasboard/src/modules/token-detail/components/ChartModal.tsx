@@ -11,7 +11,7 @@ export const ChartModal = observer(() => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 sm:items-center sm:p-4 !mt-0">
-      <div className="relative h-[92vh] w-full overflow-auto rounded-t-3xl border border-[var(--border)] bg-[var(--background)] p-4 shadow-2xl sm:h-auto sm:max-h-[90vh] sm:max-w-6xl sm:rounded-3xl sm:p-6">
+      <div className="relative h-[92vh] w-full overflow-auto rounded-t-3xl border border-[var(--border)] bg-[var(--background)] p-4 shadow-2xl sm:h-auto sm:max-h-[92vh] sm:max-w-[95vw] sm:rounded-3xl sm:p-6 xl:max-w-[92vw]">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h3 className="truncate text-base font-semibold text-[var(--foreground)] sm:text-lg">
             {store.market.selectedSymbol} {t("chart")}

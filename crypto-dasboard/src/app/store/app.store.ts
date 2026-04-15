@@ -6,6 +6,7 @@ import type {
 import type { CandleItem } from "../../shared/types/chart.types";
 import type { UserSettings } from "../../shared/types/settings.types";
 import type { RecentTradeItem } from "../../shared/types/trade.types";
+import type { OrderBookLevel } from "../../shared/types/orderbook.types";
 
 export interface AppStore {
   market: {
@@ -39,6 +40,18 @@ export interface AppStore {
     trades: RecentTradeItem[];
     isLoadingTrades: boolean;
     tradeError: string | null;
+    orderBook: {
+      bids: OrderBookLevel[];
+      asks: OrderBookLevel[];
+      isLoading: boolean;
+      error: string | null;
+      connectionStatus:
+        | "idle"
+        | "connecting"
+        | "live"
+        | "reconnecting"
+        | "disconnected";
+    };
   };
   settings: UserSettings;
 }
@@ -70,6 +83,13 @@ export const appStore = createStore<AppStore>("appStore", {
     trades: [],
     isLoadingTrades: false,
     tradeError: null,
+    orderBook: {
+      bids: [],
+      asks: [],
+      isLoading: false,
+      error: null,
+      connectionStatus: "idle",
+    },
   },
   settings: {
     language: "en",

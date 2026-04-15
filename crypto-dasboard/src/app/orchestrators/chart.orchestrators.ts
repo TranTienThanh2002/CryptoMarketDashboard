@@ -1,14 +1,23 @@
 import { orchestrator } from "satcheljs";
 import {
+  clearOrderBook,
   connectChartStream,
   connectChartStreamSuccess,
+  connectOrderBookStream,
+  connectOrderBookStreamSuccess,
   disconnectChartStream,
+  disconnectOrderBookStream,
   loadChartData,
   loadChartDataFailure,
   loadChartDataSuccess,
+  loadOrderBook,
+  loadOrderBookFailure,
+  loadOrderBookSuccess,
+  patchOrderBook,
+  setOrderBookConnectionStatus,
   upsertCurrentCandle,
 } from "../actions/chart.actions";
-import { getKlines } from "../../services/api/binance.api";
+import { getKlines, getOrderBook } from "../../services/api/binance.api";
 import { WebSocketManager } from "../../services/websocket/websocket-manager";
 import { BINANCE_WS_BASE_URL } from "../../shared/constants/api";
 import type { BinanceKlineWsPayload } from "../../shared/types/chart.types";
@@ -22,9 +31,12 @@ import {
 } from "../actions/chart.actions";
 import type { BinanceTradeWsPayload } from "../../shared/types/trade.types";
 import { appStore } from "../store/app.store";
+import type { BinanceDepthWsPayload } from "../../shared/types/orderbook.types";
+import { mergeOrderBookLevels } from "../../shared/utils/orderbook";
 let chartSocket: WebSocketManager<BinanceKlineWsPayload> | null = null;
 let tradeSocket: WebSocketManager<BinanceTradeWsPayload> | null = null;
 let activeChartRequestKey = "";
+let orderBookSocket: WebSocketManager<BinanceDepthWsPayload> | null = null;
 orchestrator(loadChartData, async ({ symbol, interval }) => {
   const requestKey = `${symbol}_${interval}_${Date.now()}`;
   activeChartRequestKey = requestKey;
@@ -127,4 +139,68 @@ orchestrator(disconnectTradesStream, () => {
   tradeSocket?.disconnect();
   tradeSocket = null;
   clearRecentTrades();
+});
+
+orchestrator(loadOrderBook, async ({ symbol }) => {
+  try {
+    const snapshot = await getOrderBook(symbol, 10);
+    loadOrderBookSuccess(snapshot);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to load order book";
+    loadOrderBookFailure(message);
+  }
+});
+
+orchestrator(connectOrderBookStream, ({ symbol }) => {
+  orderBookSocket?.disconnect();
+
+  orderBookSocket = new WebSocketManager<BinanceDepthWsPayload>(
+    `${BINANCE_WS_BASE_URL}/${symbol.toLowerCase()}@depth10@100ms`,
+    (payload) => {
+      const store = appStore();
+      const nextBids = (payload.b ?? []).map(([price, quantity]) => ({
+        price: Number(price),
+        quantity: Number(quantity),
+      }));
+      const nextAsks = (payload.a ?? []).map(([price, quantity]) => ({
+        price: Number(price),
+        quantity: Number(quantity),
+      }));
+
+      const merged = mergeOrderBookLevels(
+        store.chart.orderBook.bids,
+        store.chart.orderBook.asks,
+        nextBids,
+        nextAsks,
+        10,
+      );
+
+      patchOrderBook(merged);
+    },
+    () => {
+      connectOrderBookStreamSuccess();
+      setOrderBookConnectionStatus("live");
+    },
+    () => {
+      console.warn("Order book websocket error");
+    },
+    (event) => {
+      console.warn("Order book websocket closed", event.code, event.reason);
+
+      if (event.code !== 1000) {
+        setOrderBookConnectionStatus("disconnected");
+      }
+    },
+    () => {
+      setOrderBookConnectionStatus("reconnecting");
+    },
+  );
+
+  orderBookSocket.connect();
+});
+orchestrator(disconnectOrderBookStream, () => {
+  orderBookSocket?.disconnect();
+  orderBookSocket = null;
+  clearOrderBook();
 });
