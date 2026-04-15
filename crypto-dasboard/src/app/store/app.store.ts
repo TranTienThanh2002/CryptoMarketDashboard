@@ -5,6 +5,7 @@ import type {
 } from "../../shared/types/market.types";
 import type { CandleItem } from "../../shared/types/chart.types";
 import type { UserSettings } from "../../shared/types/settings.types";
+import type { RecentTradeItem } from "../../shared/types/trade.types";
 
 export interface AppStore {
   market: {
@@ -20,7 +21,7 @@ export interface AppStore {
     currentPage: number;
     pageSize: number;
     isChartModalOpen: boolean;
-    connectionStatus: 'connecting' | 'live' | 'reconnecting' | 'disconnected';
+    connectionStatus: "connecting" | "live" | "reconnecting" | "disconnected";
   };
   chart: {
     symbol: string | null;
@@ -29,7 +30,15 @@ export interface AppStore {
     isLoading: boolean;
     isStreaming: boolean;
     error: string | null;
-    connectionStatus: 'idle' | 'connecting' | 'live' | 'reconnecting' | 'disconnected';
+    connectionStatus:
+      | "idle"
+      | "connecting"
+      | "live"
+      | "reconnecting"
+      | "disconnected";
+    trades: RecentTradeItem[];
+    isLoadingTrades: boolean;
+    tradeError: string | null;
   };
   settings: UserSettings;
 }
@@ -48,7 +57,7 @@ export const appStore = createStore<AppStore>("appStore", {
     currentPage: 1,
     pageSize: 10,
     isChartModalOpen: false,
-    connectionStatus: 'connecting'
+    connectionStatus: "connecting",
   },
   chart: {
     symbol: null,
@@ -57,7 +66,10 @@ export const appStore = createStore<AppStore>("appStore", {
     isLoading: false,
     isStreaming: false,
     error: null,
-    connectionStatus: 'idle'
+    connectionStatus: "idle",
+    trades: [],
+    isLoadingTrades: false,
+    tradeError: null,
   },
   settings: {
     language: "en",

@@ -9,6 +9,11 @@ import {
   connectChartStreamFailure,
   upsertCurrentCandle,
   setChartInterval,
+  connectTradesStream,
+  connectTradesStreamSuccess,
+  connectTradesStreamFailure,
+  prependRecentTrade,
+  clearRecentTrades,
 } from "../actions/chart.actions";
 import { setChartConnectionStatus } from "../actions/chart.actions";
 const store = appStore();
@@ -78,4 +83,29 @@ mutator(setChartInterval, ({ interval }) => {
 
 mutator(setChartConnectionStatus, ({ status }) => {
   store.chart.connectionStatus = status;
+});
+
+mutator(connectTradesStream, () => {
+  store.chart.isLoadingTrades = true;
+  store.chart.tradeError = null;
+});
+
+mutator(connectTradesStreamSuccess, () => {
+  store.chart.isLoadingTrades = false;
+});
+
+mutator(connectTradesStreamFailure, ({ error }) => {
+  store.chart.isLoadingTrades = false;
+  store.chart.tradeError = error;
+});
+
+mutator(prependRecentTrade, ({ trade }) => {
+  const nextTrades = [trade, ...store.chart.trades].slice(0, 40);
+  store.chart.trades = nextTrades;
+});
+
+mutator(clearRecentTrades, () => {
+  store.chart.trades = [];
+  store.chart.tradeError = null;
+  store.chart.isLoadingTrades = false;
 });

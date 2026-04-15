@@ -1,7 +1,6 @@
 import { orchestrator } from "satcheljs";
 import {
   connectChartStream,
-  connectChartStreamFailure,
   connectChartStreamSuccess,
   disconnectChartStream,
   loadChartData,
@@ -14,8 +13,17 @@ import { WebSocketManager } from "../../services/websocket/websocket-manager";
 import { BINANCE_WS_BASE_URL } from "../../shared/constants/api";
 import type { BinanceKlineWsPayload } from "../../shared/types/chart.types";
 import { setChartConnectionStatus } from "../actions/chart.actions";
+import {
+  clearRecentTrades,
+  connectTradesStream,
+  connectTradesStreamFailure,
+  connectTradesStreamSuccess,
+  disconnectTradesStream,
+  prependRecentTrade,
+} from "../actions/chart.actions";
+import type { BinanceTradeWsPayload } from "../../shared/types/trade.types";
 let chartSocket: WebSocketManager<BinanceKlineWsPayload> | null = null;
-
+let tradeSocket: WebSocketManager<BinanceTradeWsPayload> | null = null;
 orchestrator(loadChartData, async ({ symbol, interval }) => {
   try {
     const candles = await getKlines(symbol, interval);
@@ -71,4 +79,42 @@ orchestrator(disconnectChartStream, () => {
   chartSocket?.disconnect();
   chartSocket = null;
   setChartConnectionStatus("idle");
+});
+
+orchestrator(connectTradesStream, ({ symbol }) => {
+  tradeSocket?.disconnect();
+
+  tradeSocket = new WebSocketManager<BinanceTradeWsPayload>(
+    `${BINANCE_WS_BASE_URL}/${symbol.toLowerCase()}@trade`,
+    (payload) => {
+      prependRecentTrade({
+        id: payload.t,
+        price: Number(payload.p),
+        quantity: Number(payload.q),
+        timestamp: payload.T,
+        isBuyerMaker: payload.m,
+      });
+    },
+    () => {
+      connectTradesStreamSuccess();
+      console.log("trade ws live");
+    },
+    () => {
+      console.warn("trade ws error");
+    },
+    (event) => {
+      console.warn("trade ws closed", event.code, event.reason);
+    },
+    (attempt) => {
+      console.log("trade ws reconnect attempt", attempt);
+    },
+  );
+
+  tradeSocket.connect();
+});
+
+orchestrator(disconnectTradesStream, () => {
+  tradeSocket?.disconnect();
+  tradeSocket = null;
+  clearRecentTrades();
 });

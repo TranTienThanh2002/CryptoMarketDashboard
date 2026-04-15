@@ -34,6 +34,11 @@ export const translations = {
     theme: "Theme",
     dark: "Dark",
     light: "Light",
+    recentTrades: "Recent Trades",
+    noRecentTrades: "No recent trades.",
+    items: "items",
+    qty: "Qty",
+    time: "Time",
   },
   vi: {
     appTitle: "Bảng Điều Khiển Crypto",
@@ -70,6 +75,11 @@ export const translations = {
     theme: "Giao diện",
     dark: "Tối",
     light: "Sáng",
+    recentTrades: "Giao dịch gần đây",
+    noRecentTrades: "Không có giao dịch gần đây.",
+    items: "giao dịch",
+    qty: "Số lượng",
+    time: "Thời gian",
   },
 } as const;
 

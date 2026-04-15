@@ -11,6 +11,11 @@ import { CandlestickChart } from "./CandlestickChart";
 import { t } from "../../../shared/i18n";
 import { ConnectionBadge } from "../../../shared/components/ConnectionBadge";
 import { EmptyState } from "../../../shared/components/EmptyState";
+import { RecentTrades } from "./RecentTrades";
+import {
+  connectTradesStream,
+  disconnectTradesStream,
+} from "../../../app/actions/chart.actions";
 const intervals = ["1m", "5m", "15m", "1h", "4h"];
 
 export const TokenDetailPanel = observer(() => {
@@ -23,9 +28,10 @@ export const TokenDetailPanel = observer(() => {
 
     loadChartData(selectedSymbol, interval);
     connectChartStream(selectedSymbol, interval);
-
+    connectTradesStream(selectedSymbol);
     return () => {
       disconnectChartStream();
+      disconnectTradesStream();
     };
   }, [selectedSymbol, interval]);
 
@@ -41,7 +47,9 @@ export const TokenDetailPanel = observer(() => {
     <div className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h3 className="text-xl font-bold text-[var(--foreground)]">{selectedSymbol}</h3>
+          <h3 className="text-xl font-bold text-[var(--foreground)]">
+            {selectedSymbol}
+          </h3>
           <p className="mt-1 text-sm text-slate-400">
             {t("realTimeCandlestickChart")}
           </p>
@@ -68,7 +76,7 @@ export const TokenDetailPanel = observer(() => {
       </div>
 
       {isLoading ? (
-        <div className="rounded-2xl border border-[var(--border)] bg-[#121a2b] px-4 py-16 text-center text-sm text-[var(--foreground)]">
+        <div className="rounded-2xl border border-white/10 bg-[#121a2b] px-4 py-16 text-center text-sm text-slate-300">
           {t("loadingChartData")}
         </div>
       ) : candles.length === 0 ? (
@@ -77,11 +85,17 @@ export const TokenDetailPanel = observer(() => {
           description="Please try another interval or token."
         />
       ) : (
-        <CandlestickChart
-          candles={candles}
-          symbol={selectedSymbol}
-          interval={interval}
-        />
+        <div className="grid gap-4 xl:grid-cols-[1.6fr_0.9fr]">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-2)] p-3">
+            <CandlestickChart
+              candles={candles}
+              symbol={selectedSymbol}
+              interval={interval}
+            />
+          </div>
+
+          <RecentTrades />
+        </div>
       )}
     </div>
   );
