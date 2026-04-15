@@ -21,12 +21,20 @@ import {
   disconnectTradesStream,
 } from "../../../app/actions/chart.actions";
 import { OrderBook } from "./OrderBook";
+import { showInfo } from "../../../shared/utils/toast";
 const intervals = ["1m", "5m", "15m", "1h", "4h"];
 
 export const TokenDetailPanel = observer(() => {
   const store = appStore();
   const selectedSymbol = store.market.selectedSymbol;
   const { candles, interval, isLoading, error } = store.chart;
+  const handleRetryChart = () => {
+    if (!selectedSymbol) return;
+
+    showInfo(t("retryingChart"));
+    loadChartData(selectedSymbol, interval);
+    connectChartStream(selectedSymbol, interval);
+  };
   useEffect(() => {
     if (!selectedSymbol) return;
     disconnectChartStream();
@@ -84,6 +92,20 @@ export const TokenDetailPanel = observer(() => {
           ))}
         </div>
       </div>
+
+      {error ? (
+        <div className="mb-4 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <div>{error}</div>
+
+          <button
+            type="button"
+            onClick={handleRetryChart}
+            className="mt-3 rounded-full border border-red-400/20 bg-red-500/10 px-3 py-1.5 text-xs text-red-200 transition hover:bg-red-500/20"
+          >
+            {t("retryChart")}
+          </button>
+        </div>
+      ) : null}
 
       {isLoading ? (
         <div className="rounded-2xl border border-white/10 bg-[#121a2b] px-4 py-16 text-center text-sm text-slate-300">

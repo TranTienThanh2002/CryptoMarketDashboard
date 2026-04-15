@@ -3,8 +3,9 @@ import { appStore } from "../../../app/store/app.store";
 import { closeChartModal } from "../../../app/actions/market.actions";
 import { TokenDetailPanel } from "./TokenDetailPanel";
 import { t } from "../../../shared/i18n";
+import { memo } from "react";
 
-export const ChartModal = observer(() => {
+export const ChartModal = memo(observer(() => {
   const store = appStore();
 
   if (!store.market.isChartModalOpen) return null;
@@ -30,4 +31,4 @@ export const ChartModal = observer(() => {
       </div>
     </div>
   );
-});
+}));

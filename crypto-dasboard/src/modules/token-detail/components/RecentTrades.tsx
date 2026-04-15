@@ -3,11 +3,19 @@ import { appStore } from "../../../app/store/app.store";
 import { formatPrice } from "../../../shared/utils/format";
 import { formatTradeTime } from "../../../shared/utils/trade-format";
 import { t } from "../../../shared/i18n";
+import { showInfo } from "../../../shared/utils/toast";
+import { connectTradesStream } from "../../../app/actions/chart.actions";
 
 export const RecentTrades = observer(() => {
   const store = appStore();
   const { trades, isLoadingTrades, tradeError } = store.chart;
+  const handleRetryTrades = () => {
+    const symbol = store.market.selectedSymbol;
+    if (!symbol) return;
 
+    showInfo(t("retryingTrades"));
+    connectTradesStream(symbol);
+  };
   return (
     <div className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-4">
       <div className="mb-4 flex items-center justify-between">
@@ -21,7 +29,15 @@ export const RecentTrades = observer(() => {
 
       {tradeError ? (
         <div className="mb-3 rounded-2xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-300">
-          {tradeError}
+          <div>{tradeError}</div>
+
+          <button
+            type="button"
+            onClick={handleRetryTrades}
+            className="mt-2 rounded-full border border-red-400/20 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:bg-red-500/20"
+          >
+            {t("retryTrades")}
+          </button>
         </div>
       ) : null}
 
@@ -38,7 +54,7 @@ export const RecentTrades = observer(() => {
       ) : trades.length === 0 ? (
         <div className="text-sm text-[var(--muted)]">{t("noRecentTrades")}</div>
       ) : (
-        <div className="max-h-[420px] space-y-2 overflow-auto">
+        <div className="max-h-[420px] space-y-2 overflow-auto will-change-transform">
           <div className="grid grid-cols-3 gap-3 text-[11px] uppercase tracking-wide text-[var(--muted)]">
             <div>{t("price")}</div>
             <div className="text-right">{t("qty")}</div>

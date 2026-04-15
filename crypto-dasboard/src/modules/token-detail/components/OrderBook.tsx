@@ -3,12 +3,24 @@ import { appStore } from "../../../app/store/app.store";
 import { formatPrice } from "../../../shared/utils/format";
 import { ConnectionBadge } from "../../../shared/components/ConnectionBadge";
 import { t } from "../../../shared/i18n";
+import { showInfo } from "../../../shared/utils/toast";
+import {
+  connectOrderBookStream,
+  loadOrderBook,
+} from "../../../app/actions/chart.actions";
 
 export const OrderBook = observer(() => {
   const store = appStore();
   const { bids, asks, isLoading, error, connectionStatus } =
     store.chart.orderBook;
+  const handleRetryOrderBook = () => {
+    const symbol = store.market.selectedSymbol;
+    if (!symbol) return;
 
+    showInfo("Retrying order book...");
+    loadOrderBook(symbol);
+    connectOrderBookStream(symbol);
+  };
   return (
     <div className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-4">
       <div className="mb-4 flex items-center justify-between">
@@ -20,7 +32,15 @@ export const OrderBook = observer(() => {
 
       {error ? (
         <div className="mb-3 rounded-2xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-300">
-          {error}
+          <div>{error}</div>
+
+          <button
+            type="button"
+            onClick={handleRetryOrderBook}
+            className="mt-2 rounded-full border border-red-400/20 bg-red-500/10 px-3 py-1 text-[11px] text-red-200 transition hover:bg-red-500/20"
+          >
+            {t("retryOrderBook")}
+          </button>
         </div>
       ) : null}
 

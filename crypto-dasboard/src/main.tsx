@@ -1,8 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { Toaster } from "react-hot-toast";
 import "./styles.css";
 import { App } from "./App";
-import { Toaster } from "react-hot-toast";
+import { AppErrorBoundary } from "./shared/components/AppErrorBoundary";
 const rootElement = document.getElementById("root");
 
 if (!rootElement) {
@@ -11,17 +12,19 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <App />
-    <Toaster
-      position="top-right"
-      toastOptions={{
-        duration: 3000,
-        style: {
-          background: "var(--card)",
-          color: "var(--foreground)",
-          border: "1px solid var(--border)",
-        },
-      }}
-    />
+    <AppErrorBoundary>
+      <App />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: "var(--card)",
+            color: "var(--foreground)",
+            border: "1px solid var(--border)",
+          },
+        }}
+      />
+    </AppErrorBoundary>
   </StrictMode>,
 );
