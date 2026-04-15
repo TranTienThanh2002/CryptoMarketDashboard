@@ -33,6 +33,8 @@ import type { BinanceTradeWsPayload } from "../../shared/types/trade.types";
 import { appStore } from "../store/app.store";
 import type { BinanceDepthWsPayload } from "../../shared/types/orderbook.types";
 import { mergeOrderBookLevels } from "../../shared/utils/orderbook";
+import { showError, showInfo, showSuccess } from "../../shared/utils/toast";
+import { t } from "../../shared/i18n";
 let chartSocket: WebSocketManager<BinanceKlineWsPayload> | null = null;
 let tradeSocket: WebSocketManager<BinanceTradeWsPayload> | null = null;
 let activeChartRequestKey = "";
@@ -53,6 +55,7 @@ orchestrator(loadChartData, async ({ symbol, interval }) => {
     const message =
       error instanceof Error ? error.message : "Failed to load chart data";
     loadChartDataFailure(message);
+    showError(t('chartConnectionLost'));
   }
 });
 
@@ -76,6 +79,7 @@ orchestrator(connectChartStream, ({ symbol, interval }) => {
     () => {
       connectChartStreamSuccess();
       setChartConnectionStatus("live");
+      showSuccess(t('chartConnected'));
     },
     () => {
       console.warn("Chart websocket error");
@@ -85,11 +89,13 @@ orchestrator(connectChartStream, ({ symbol, interval }) => {
 
       if (event.code !== 1000) {
         setChartConnectionStatus("disconnected");
+        showError(t('chartConnectionLost'));
       }
     },
     (attempt) => {
       console.log("chart ws reconnect attempt", attempt);
       setChartConnectionStatus("reconnecting");
+      showInfo(t('reconnecting'));
     },
   );
 
@@ -120,15 +126,18 @@ orchestrator(connectTradesStream, ({ symbol }) => {
     () => {
       connectTradesStreamSuccess();
       console.log("trade ws live");
+      showSuccess(t('tradesConnected'));
     },
     () => {
       console.warn("trade ws error");
     },
     (event) => {
       console.warn("trade ws closed", event.code, event.reason);
+      showError(t('tradesConnectionLost'));
     },
     (attempt) => {
       console.log("trade ws reconnect attempt", attempt);
+      showInfo(t('reconnecting'));
     },
   );
 
@@ -181,6 +190,7 @@ orchestrator(connectOrderBookStream, ({ symbol }) => {
     () => {
       connectOrderBookStreamSuccess();
       setOrderBookConnectionStatus("live");
+      showSuccess(t('orderBookConnected'));
     },
     () => {
       console.warn("Order book websocket error");
@@ -190,10 +200,12 @@ orchestrator(connectOrderBookStream, ({ symbol }) => {
 
       if (event.code !== 1000) {
         setOrderBookConnectionStatus("disconnected");
+        showError(t('orderBookConnectionLost'));
       }
     },
     () => {
       setOrderBookConnectionStatus("reconnecting");
+      showInfo(t('reconnecting'));
     },
   );
 

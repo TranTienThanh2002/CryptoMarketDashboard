@@ -1,3 +1,5 @@
+import { appStore } from "../../app/store/app.store";
+
 type MessageHandler<T> = (payload: T) => void;
 type ErrorHandler = (event: Event) => void;
 type OpenHandler = () => void;
@@ -35,7 +37,7 @@ export class WebSocketManager<T> {
         const parsed = JSON.parse(event.data) as T;
         this.onMessage(parsed);
       } catch (error) {
-        console.error('WS parse error:', error);
+        console.error("WS parse error:", error);
       }
     };
 
@@ -46,13 +48,15 @@ export class WebSocketManager<T> {
     this.socket.onclose = (event) => {
       this.onClose?.(event);
 
-      if (this.isManualClose) return;
+      if (this.isManualClose && !appStore().market.isChartModalOpen) return;
       this.scheduleReconnect();
     };
   }
 
   disconnect(): void {
-    // this.isManualClose = true;
+    if (!appStore().market.isChartModalOpen) {
+      this.isManualClose = true;
+    }
 
     if (this.reconnectTimer) {
       window.clearTimeout(this.reconnectTimer);
@@ -63,6 +67,7 @@ export class WebSocketManager<T> {
   }
 
   private scheduleReconnect(): void {
+    this.isManualClose = false;
     const attempt = this.reconnectAttempts + 1;
     const delay = Math.min(1000 * 2 ** this.reconnectAttempts, 10000);
     this.reconnectAttempts += 1;

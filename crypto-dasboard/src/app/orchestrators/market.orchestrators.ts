@@ -6,7 +6,6 @@ import type {
 } from "../../shared/types/market.types";
 import {
   connectMiniTickerStream,
-  connectMiniTickerStreamFailure,
   connectMiniTickerStreamSuccess,
   disconnectMiniTickerStream,
   loadTradingPairs,
@@ -93,7 +92,7 @@ orchestrator(connectMiniTickerStream, () => {
       console.warn("MiniTicker websocket closed", event.code, event.reason);
 
       if (event.code !== 1000) {
-        setMarketConnectionStatus("disconnected");
+        setMarketConnectionStatus("disconnected")
       }
     },
     () => {
