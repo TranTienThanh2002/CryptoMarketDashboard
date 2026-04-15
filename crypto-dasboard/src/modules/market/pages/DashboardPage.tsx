@@ -28,7 +28,7 @@ export const DashboardPage = observer(() => {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-[var(--border)] bg-gradient-to-r from-sky-500/10 to-emerald-500/10 p-6">
+      <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-sky-500/10 to-emerald-500/10 p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <h2 className="text-2xl font-bold text-[var(--foreground)]">
@@ -46,7 +46,7 @@ export const DashboardPage = observer(() => {
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-[var(--foreground)]">
-          <span className="rounded-full border border-[var(--border)] bg-white/5 px-3 py-1">
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
             {t("pairs")}: {store.market.pairs.length}
           </span>
 

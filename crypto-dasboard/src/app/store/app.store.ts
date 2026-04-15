@@ -94,5 +94,6 @@ export const appStore = createStore<AppStore>("appStore", {
   settings: {
     language: "en",
     theme: "dark",
+    avatar: null,
   },
 });
